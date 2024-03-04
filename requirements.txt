@@ -18,3 +18,4 @@ django-cors-headers==3.14.0
 drf_extra_fields==3.4.1
 django-colorfield==0.8.0
 reportlab==3.6.12
+stripe==7.6.0
