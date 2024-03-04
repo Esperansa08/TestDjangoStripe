@@ -1,46 +1,54 @@
-import os
-from django.shortcuts import render, get_object_or_404, redirect
 import stripe
-from http import HTTPStatus
-from rest_framework.response import Response
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from dotenv import load_dotenv
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Item
+from StripeApp.settings import STRIPE_SECRET_KEY, STRIPE_PUBLIC_KEY
+
 load_dotenv()
 
-stripe.api_key = os.getenv('stripe_api_key', default='stripe_api_key')
+stripe.api_key = STRIPE_SECRET_KEY
 
 
-@api_view(['GET'])
+def index(request):
+    return render(request, "index.html")
+
+
+@csrf_exempt
 def buy_item(request, id):
-    item = get_object_or_404(Item, id=id)
-    test_payment_intent = stripe.PaymentIntent.create(
-        amount=1, currency='pln',
-        payment_method_types=['card'],
-        receipt_email='test@example.com')
-    return Response(status=HTTPStatus.OK, data=test_payment_intent.id)
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=[
+            {
+                "price": "price_1Opq4zDCDH2ouR18HmWviwtW",
+                "quantity": 1,
+            }
+        ],
+        mode="payment",
+        success_url=request.build_absolute_uri(reverse("success"))
+        + "?session_id={CHECKOUT_SESSION_ID}",
+        cancel_url=request.build_absolute_uri(reverse("index")),
+    )
+
+    return JsonResponse(
+        {"session_id": session.id, "stripe_public_key": STRIPE_PUBLIC_KEY}
+    )
 
 
-@api_view(['GET', 'POST'])
+def success(request):
+    return render(request, "success.html")
+
+
+def cancel(request):
+    return render(request, "cancel.html")
+
+
+@api_view(["GET", "POST"])
 def get_item(request, id):
     item = get_object_or_404(Item, id=id)
-    context = {'item': item}
-    # if request.method == 'POST':
-    #     session_id = buy_item(request, id)
-    #     return stripe.redirectToCheckout(sessionId=session_id)
-    if request.method == 'POST':
-        session_id = buy_item(request, id)
-        context = {'item': item,
-                   'session_id': session_id}
-        return redirect('index.html', context)
-    return render(request, 'index.html', context)
-    #return redirect('items:buy', id)
-
-
-@api_view(['POST'])
-def confirm_payment_intent(request):
-    data = request.data
-    payment_intent_id = data['payment_intent_id']
-    stripe.PaymentIntent.confirm(payment_intent_id)
-    return Response(status=HTTPStatus.OK, data={"message": "Success"})
+    context = {"item": item}
+    return render(request, "product_page.html", context)

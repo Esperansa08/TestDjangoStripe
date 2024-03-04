@@ -1,38 +1,13 @@
-<!DOCTYPE html>
 {%include 'includes/header.html'%} 
 <body>
  <main>
   <div class="container py-5">   
     <div class="row">
-        <aside class="col-12 col-md-3">
-          <ul class="list-group list-group-flush">
-            <p><b>Товар:</b></p>
-            <p><i>Название:</i> {{ item }}</p>
-            <p><i>Описание:</i> {{ item.description }}</p>
-            <p><i>Цена:</i> {{ item.price }} $</p>
-            <button type="submit" class="btn btn-success" id="submit" onclick="alerted({{item.id}});">Buy</button>
-            <div class="buy"></div>
-              {% comment %} <input type="button" class="btn btn-success" id="elem" onclick="alert(f'{session_id}')" value="Buy"> {% endcomment %}
-              {% comment %} <script>
-              *!*
-                elem.onclick = function() { // перезапишет существующий обработчик
-                  alert('Станет'); // выведется только это
-                };
-              */!*
-              </script> {% endcomment %}
-              
-          </ul>
-        </aside>
+      <p><h4><b>Добро пожаловать в Интернет-магазин "Взгляд кота"</b></h4></p>
+      <p>Для просмотра товара переходите по  <a href="/item/1/">ссылке</a></p>
     </div>
-    <script>
-      function alerted(id){
-        
-        document.querySelector('.buy').innerHTML = id
-      }
-    </script>
-  </div>
-</main>
-</body>
-
-{%include 'includes/footer.html'%}
+  </main>
+  </body>
+  
+  {%include 'includes/footer.html'%}
 </html>

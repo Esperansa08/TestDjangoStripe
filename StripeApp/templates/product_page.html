@@ -1,0 +1,41 @@
+
+{%include 'includes/header.html'%} 
+<body>
+ <main>
+  <div class="container py-5">   
+    <div class="row">
+        <aside class="col-12 col-md-3">
+          <ul class="list-group list-group-flush">
+            <section>
+              <div class="product">
+                <div class="description">
+                  <p><h4><b>Товар:</b></h4></p>
+                  <p><b>Название:</b> {{ item }}</p>
+                  <p><b>Описание:</b> {{ item.description }}</p>
+                  <p><b>Цена:</b> {{ item.price }} р.</p>
+                </div>
+              </div>
+            </section>
+            <a href="#" id="buy-btn" class="btn btn-primary">Buy</a>
+            
+            <script src="https://js.stripe.com/v3/"></script>
+            <script>
+              const buy_button = document.querySelector('#buy-btn')
+              buy_button.addEventListener('click', event => {   
+                fetch('/buy/1/')
+                .then((result) => { return result.json() })
+                .then((data) => {
+                  var stripe = Stripe(data.stripe_public_key);
+                  stripe.redirectToCheckout({
+                    sessionId: data.session_id
+                  }).then(function (result) {
+                  });
+                }) 
+              })
+            </script>
+  </div>
+</main>
+</body>
+
+{%include 'includes/footer.html'%}
+</html>
