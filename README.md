@@ -75,7 +75,7 @@ python -m pip install --upgrade pip
 ```
 pip install -r requirements.txt
 ```
-
+Создать и заполнить .env файл согласно example.env 
 
 
 #### Запуск проекта для развертывания на удаленном сервере 
